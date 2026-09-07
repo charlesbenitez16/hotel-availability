@@ -1,18 +1,16 @@
 package com.mindata.hotelavailability.application.service;
 
+import com.mindata.hotelavailability.application.port.in.PersistSearchUseCase;
 import com.mindata.hotelavailability.domain.exception.SearchPersistenceException;
 import com.mindata.hotelavailability.domain.model.HotelSearchQuery;
 import com.mindata.hotelavailability.domain.model.RegisteredSearch;
-import com.mindata.hotelavailability.application.port.in.PersistSearchUseCase;
 import com.mindata.hotelavailability.domain.port.out.SearchRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 
-@Service
 public class SearchPersistenceService implements PersistSearchUseCase {
 
     private static final Logger events = LoggerFactory.getLogger("events");

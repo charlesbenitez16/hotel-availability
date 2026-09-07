@@ -1,18 +1,16 @@
 package com.mindata.hotelavailability.application.service;
 
+import com.mindata.hotelavailability.application.port.in.RegisterSearchUseCase;
 import com.mindata.hotelavailability.domain.model.HotelSearchQuery;
 import com.mindata.hotelavailability.domain.model.RegisteredSearch;
-import com.mindata.hotelavailability.application.port.in.RegisterSearchUseCase;
 import com.mindata.hotelavailability.domain.port.out.SearchEventPublisher;
 import com.mindata.hotelavailability.domain.port.out.SearchIdGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 
 import java.time.Clock;
 import java.time.Instant;
 
-@Service
 public class SearchRegistrationService implements RegisterSearchUseCase {
 
     private static final Logger log = LoggerFactory.getLogger(SearchRegistrationService.class);

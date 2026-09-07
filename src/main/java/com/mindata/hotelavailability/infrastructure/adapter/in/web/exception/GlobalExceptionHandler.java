@@ -5,6 +5,7 @@ import com.mindata.hotelavailability.domain.exception.SearchNotFoundException;
 import jakarta.validation.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.MessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -16,9 +17,12 @@ import org.springframework.web.method.annotation.HandlerMethodValidationExceptio
 
 import java.time.Instant;
 import java.util.List;
+import java.util.stream.Stream;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    private static final String VALIDATION_FAILED = "Validation failed";
 
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
     private static final Logger events = LoggerFactory.getLogger("events");
@@ -29,9 +33,9 @@ public class GlobalExceptionHandler {
                 .map(fieldError -> "%s: %s".formatted(fieldError.getField(), fieldError.getDefaultMessage()))
                 .toList();
         List<String> globalDetails = exception.getBindingResult().getGlobalErrors().stream()
-                .map(objectError -> objectError.getDefaultMessage())
+                .map(MessageSourceResolvable::getDefaultMessage)
                 .toList();
-        return buildResponse(HttpStatus.BAD_REQUEST, "Validation failed",
+        return buildResponse(HttpStatus.BAD_REQUEST, VALIDATION_FAILED,
                 concat(details, globalDetails));
     }
 
@@ -40,15 +44,15 @@ public class GlobalExceptionHandler {
         List<String> details = exception.getConstraintViolations().stream()
                 .map(violation -> "%s: %s".formatted(violation.getPropertyPath(), violation.getMessage()))
                 .toList();
-        return buildResponse(HttpStatus.BAD_REQUEST, "Validation failed", details);
+        return buildResponse(HttpStatus.BAD_REQUEST, VALIDATION_FAILED, details);
     }
 
     @ExceptionHandler(HandlerMethodValidationException.class)
     public ResponseEntity<ApiError> handleHandlerMethodValidation(HandlerMethodValidationException exception) {
         List<String> details = exception.getAllErrors().stream()
-                .map(error -> error.getDefaultMessage())
+                .map(MessageSourceResolvable::getDefaultMessage)
                 .toList();
-        return buildResponse(HttpStatus.BAD_REQUEST, "Validation failed", details);
+        return buildResponse(HttpStatus.BAD_REQUEST, VALIDATION_FAILED, details);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
@@ -86,6 +90,6 @@ public class GlobalExceptionHandler {
     }
 
     private List<String> concat(List<String> first, List<String> second) {
-        return java.util.stream.Stream.concat(first.stream(), second.stream()).toList();
+        return Stream.concat(first.stream(), second.stream()).toList();
     }
 }

@@ -15,7 +15,6 @@ import org.springframework.context.annotation.Configuration;
 import java.time.Clock;
 import java.util.concurrent.ExecutorService;
 
-// Wires the framework-free application services as beans. Keeps Spring out of the application layer.
 @Configuration
 public class UseCaseConfig {
 

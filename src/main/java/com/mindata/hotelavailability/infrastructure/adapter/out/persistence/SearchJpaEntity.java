@@ -57,7 +57,7 @@ public class SearchJpaEntity implements Persistable<String> {
 
     @Override
     public String getId() {
-        return searchId;
+        return getSearchId();
     }
 
     @Override

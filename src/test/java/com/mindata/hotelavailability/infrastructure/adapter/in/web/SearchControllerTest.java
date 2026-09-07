@@ -1,14 +1,14 @@
 package com.mindata.hotelavailability.infrastructure.adapter.in.web;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mindata.hotelavailability.application.port.in.CountSearchUseCase;
+import com.mindata.hotelavailability.application.port.in.RegisterSearchUseCase;
 import com.mindata.hotelavailability.domain.exception.SearchNotFoundException;
 import com.mindata.hotelavailability.domain.model.HotelSearchQuery;
 import com.mindata.hotelavailability.domain.model.RegisteredSearch;
 import com.mindata.hotelavailability.domain.model.SearchCount;
-import com.mindata.hotelavailability.application.port.in.CountSearchUseCase;
-import com.mindata.hotelavailability.application.port.in.RegisterSearchUseCase;
 import com.mindata.hotelavailability.infrastructure.adapter.in.web.exception.GlobalExceptionHandler;
 import com.mindata.hotelavailability.infrastructure.adapter.in.web.mapper.SearchWebMapper;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
@@ -25,7 +25,6 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -50,18 +49,18 @@ class SearchControllerTest {
     private CountSearchUseCase countSearchUseCase;
 
     private HotelSearchQuery stay;
-    private RegisteredSearch record;
+    private RegisteredSearch search;
 
     @BeforeEach
     void setUp() {
         stay = new HotelSearchQuery(
                 "1234aBc", LocalDate.of(2023, 12, 29), LocalDate.of(2023, 12, 31), List.of(30, 29, 1, 3));
-        record = new RegisteredSearch("search-id", stay, Instant.parse("2023-12-01T10:15:30Z"));
+        search = new RegisteredSearch("search-id", stay, Instant.parse("2023-12-01T10:15:30Z"));
     }
 
     @Test
     void searchShouldReturn201WithSearchId() throws Exception {
-        when(registerSearchUseCase.registerSearch(any())).thenReturn(record);
+        when(registerSearchUseCase.registerSearch(any())).thenReturn(search);
 
         mockMvc.perform(post("/search")
                         .contentType("application/json")
@@ -125,7 +124,7 @@ class SearchControllerTest {
                 .andExpect(jsonPath("$.search.ages[0]").value(30))
                 .andExpect(jsonPath("$.search.ages[1]").value(29));
 
-        verify(countSearchUseCase).countBySearchId(eq("search-id"));
+        verify(countSearchUseCase).countBySearchId("search-id");
     }
 
     @Test
@@ -149,7 +148,7 @@ class SearchControllerTest {
 
     @Test
     void statusCodesShouldMatchExpectationsAcrossBothEndpoints() throws Exception {
-        when(registerSearchUseCase.registerSearch(any())).thenReturn(record);
+        when(registerSearchUseCase.registerSearch(any())).thenReturn(search);
         when(countSearchUseCase.countBySearchId("search-id")).thenReturn(new SearchCount("search-id", stay, 5L));
 
         var searchStatus = mockMvc.perform(post("/search")

@@ -41,12 +41,12 @@ class SearchRepositoryAdapterTest {
 
     @Test
     void shouldSaveAndRetrieveASearchById() {
-        RegisteredSearch record = new RegisteredSearch(UUID.randomUUID().toString(), stay, Instant.now());
+        RegisteredSearch search = new RegisteredSearch(UUID.randomUUID().toString(), stay, Instant.now());
 
-        adapter.save(record);
-        Optional<RegisteredSearch> found = adapter.findBySearchId(record.searchId());
+        adapter.save(search);
+        Optional<RegisteredSearch> found = adapter.findBySearchId(search.searchId());
 
-        assertThat(found).contains(record);
+        assertThat(found).contains(search);
     }
 
     @Test

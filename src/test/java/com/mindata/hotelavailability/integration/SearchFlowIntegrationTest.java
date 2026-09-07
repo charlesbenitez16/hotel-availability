@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 /**
  * End-to-end: POST /search -> Kafka -> consumer persists on a virtual thread
@@ -34,10 +35,11 @@ class SearchFlowIntegrationTest {
         Map<String, Object> payload = searchPayload("1234aBc");
 
         ResponseEntity<Map> searchResponse = restTemplate.postForEntity("/search", payload, Map.class);
-
-        assertThat(searchResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         String searchId = (String) searchResponse.getBody().get("searchId");
-        assertThat(searchId).isNotBlank();
+
+        assertAll(
+                () -> assertThat(searchResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED),
+                () -> assertThat(searchId).isNotBlank());
 
         Awaitility.await()
                 .atMost(Duration.ofSeconds(15))
@@ -45,8 +47,9 @@ class SearchFlowIntegrationTest {
                     ResponseEntity<Map> countResponse =
                             restTemplate.getForEntity("/count?searchId={id}", Map.class, searchId);
 
-                    assertThat(countResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
-                    assertThat(countResponse.getBody().get("count")).isEqualTo(1);
+                    assertAll(
+                            () -> assertThat(countResponse.getStatusCode()).isEqualTo(HttpStatus.OK),
+                            () -> assertThat(countResponse.getBody()).containsEntry("count", 1));
                 });
     }
 
@@ -64,7 +67,7 @@ class SearchFlowIntegrationTest {
                     ResponseEntity<Map> countResponse =
                             restTemplate.getForEntity("/count?searchId={id}", Map.class, secondSearchId);
 
-                    assertThat(countResponse.getBody().get("count")).isEqualTo(2);
+                    assertThat(countResponse.getBody()).containsEntry("count", 2);
                 });
     }
 

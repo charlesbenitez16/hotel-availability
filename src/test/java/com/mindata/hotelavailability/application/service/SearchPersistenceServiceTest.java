@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
@@ -30,7 +29,7 @@ class SearchPersistenceServiceTest {
 
     private ExecutorService virtualThreadExecutor;
     private SearchPersistenceService service;
-    private RegisteredSearch record;
+    private RegisteredSearch search;
 
     @BeforeEach
     void setUp() {
@@ -39,7 +38,7 @@ class SearchPersistenceServiceTest {
 
         HotelSearchQuery stay = new HotelSearchQuery(
                 "1234aBc", LocalDate.of(2023, 12, 29), LocalDate.of(2023, 12, 31), List.of(30, 29, 1, 3));
-        record = new RegisteredSearch("search-id", stay, Instant.parse("2023-12-01T10:15:30Z"));
+        search = new RegisteredSearch("search-id", stay, Instant.parse("2023-12-01T10:15:30Z"));
     }
 
     @AfterEach
@@ -49,16 +48,16 @@ class SearchPersistenceServiceTest {
 
     @Test
     void shouldPersistTheRecordUsingAVirtualThread() {
-        service.persist(record);
+        service.persist(search);
 
-        verify(searchRepository).save(record);
+        verify(searchRepository).save(search);
     }
 
     @Test
     void shouldWrapRepositoryFailuresAsSearchPersistenceException() {
-        doThrow(new IllegalStateException("db is down")).when(searchRepository).save(record);
+        doThrow(new IllegalStateException("db is down")).when(searchRepository).save(search);
 
-        assertThatThrownBy(() -> service.persist(record))
+        assertThatThrownBy(() -> service.persist(search))
                 .isInstanceOf(SearchPersistenceException.class)
                 .hasMessageContaining("search-id")
                 .cause()

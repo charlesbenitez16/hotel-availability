@@ -7,6 +7,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 class SearchCountTest {
 
@@ -17,9 +18,10 @@ class SearchCountTest {
     void shouldExposeGivenValues() {
         SearchCount count = new SearchCount("search-id", stay, 100L);
 
-        assertThat(count.searchId()).isEqualTo("search-id");
-        assertThat(count.stay()).isEqualTo(stay);
-        assertThat(count.count()).isEqualTo(100L);
+        assertAll(
+                () -> assertThat(count.searchId()).isEqualTo("search-id"),
+                () -> assertThat(count.stay()).isEqualTo(stay),
+                () -> assertThat(count.count()).isEqualTo(100L));
     }
 
     @Test

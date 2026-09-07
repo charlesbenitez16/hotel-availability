@@ -18,6 +18,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -29,27 +30,28 @@ class SearchCountServiceTest {
 
     private SearchCountService service;
     private HotelSearchQuery stay;
-    private RegisteredSearch record;
+    private RegisteredSearch search;
 
     @BeforeEach
     void setUp() {
         service = new SearchCountService(searchRepository);
         stay = new HotelSearchQuery(
                 "1234aBc", LocalDate.of(2023, 12, 29), LocalDate.of(2023, 12, 31), List.of(30, 29, 1, 3));
-        record = new RegisteredSearch("search-id", stay, Instant.parse("2023-12-01T10:15:30Z"));
+        search = new RegisteredSearch("search-id", stay, Instant.parse("2023-12-01T10:15:30Z"));
     }
 
     @Test
     void shouldReturnTheCountForAKnownSearchId() {
-        when(searchRepository.findBySearchId("search-id")).thenReturn(Optional.of(record));
+        when(searchRepository.findBySearchId("search-id")).thenReturn(Optional.of(search));
         when(searchRepository.countByStay(stay)).thenReturn(100L);
 
         SearchCount result = service.countBySearchId("search-id");
 
-        assertThat(result.searchId()).isEqualTo("search-id");
-        assertThat(result.stay()).isEqualTo(stay);
-        assertThat(result.count()).isEqualTo(100L);
         verify(searchRepository).countByStay(stay);
+        assertAll(
+                () -> assertThat(result.searchId()).isEqualTo("search-id"),
+                () -> assertThat(result.stay()).isEqualTo(stay),
+                () -> assertThat(result.count()).isEqualTo(100L));
     }
 
     @Test

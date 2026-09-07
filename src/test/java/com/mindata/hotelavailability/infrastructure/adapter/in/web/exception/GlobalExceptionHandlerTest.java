@@ -7,12 +7,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.mock.http.MockHttpInputMessage;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 
 import java.time.LocalDate;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 class GlobalExceptionHandlerTest {
 
@@ -23,15 +25,16 @@ class GlobalExceptionHandlerTest {
         ResponseEntity<ApiError> response =
                 handler.handleConstraintViolation(new ConstraintViolationException(Set.of()));
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-        assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().error()).isEqualTo("Validation failed");
+        assertAll(
+                () -> assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST),
+                () -> assertThat(response.getBody()).isNotNull(),
+                () -> assertThat(response.getBody().error()).isEqualTo("Validation failed"));
     }
 
     @Test
     void shouldMapHttpMessageNotReadableExceptionTo400() {
-        ResponseEntity<ApiError> response =
-                handler.handleNotReadable(new HttpMessageNotReadableException("bad json"));
+        ResponseEntity<ApiError> response = handler.handleNotReadable(
+                new HttpMessageNotReadableException("bad json", new MockHttpInputMessage(new byte[0])));
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody().details()).isNotEmpty();
@@ -52,9 +55,10 @@ class GlobalExceptionHandlerTest {
 
         ResponseEntity<ApiError> response = handler.handleInvalidDateRange(exception);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-        assertThat(response.getBody().error()).isEqualTo("Invalid date range");
-        assertThat(response.getBody().details().get(0)).contains("must be strictly before");
+        assertAll(
+                () -> assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST),
+                () -> assertThat(response.getBody().error()).isEqualTo("Invalid date range"),
+                () -> assertThat(response.getBody().details().get(0)).contains("must be strictly before"));
     }
 
     @Test

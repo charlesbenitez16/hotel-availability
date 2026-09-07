@@ -33,14 +33,14 @@ class KafkaSearchEventPublisherTest {
     private KafkaTemplate<String, SearchEventMessage> kafkaTemplate;
 
     private KafkaSearchEventPublisher publisher;
-    private RegisteredSearch record;
+    private RegisteredSearch search;
 
     @BeforeEach
     void setUp() {
         publisher = new KafkaSearchEventPublisher(kafkaTemplate, TOPIC);
         HotelSearchQuery stay = new HotelSearchQuery(
                 "1234aBc", LocalDate.of(2023, 12, 29), LocalDate.of(2023, 12, 31), List.of(30, 29, 1, 3));
-        record = new RegisteredSearch("search-id", stay, Instant.parse("2023-12-01T10:15:30Z"));
+        search = new RegisteredSearch("search-id", stay, Instant.parse("2023-12-01T10:15:30Z"));
     }
 
     @Test
@@ -52,7 +52,7 @@ class KafkaSearchEventPublisherTest {
         when(kafkaTemplate.send(eq(TOPIC), eq("search-id"), any()))
                 .thenReturn(CompletableFuture.completedFuture(sendResult));
 
-        publisher.publish(record);
+        publisher.publish(search);
 
         ArgumentCaptor<SearchEventMessage> captor = ArgumentCaptor.forClass(SearchEventMessage.class);
         verify(kafkaTemplate).send(eq(TOPIC), eq("search-id"), captor.capture());
@@ -66,7 +66,7 @@ class KafkaSearchEventPublisherTest {
         failedFuture.completeExceptionally(new RuntimeException("broker unavailable"));
         when(kafkaTemplate.send(eq(TOPIC), eq("search-id"), any())).thenReturn(failedFuture);
 
-        publisher.publish(record);
+        publisher.publish(search);
 
         verify(kafkaTemplate).send(eq(TOPIC), eq("search-id"), any());
     }

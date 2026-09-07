@@ -8,37 +8,40 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 class RegisteredSearchTest {
+
+    private static final Instant NOW = Instant.parse("2023-12-01T10:15:30Z");
 
     private final HotelSearchQuery stay = new HotelSearchQuery(
             "1234aBc", LocalDate.of(2023, 12, 29), LocalDate.of(2023, 12, 31), List.of(30, 29, 1, 3));
 
     @Test
     void shouldExposeGivenValues() {
-        Instant now = Instant.parse("2023-12-01T10:15:30Z");
-        RegisteredSearch record = new RegisteredSearch("search-id", stay, now);
+        RegisteredSearch search = new RegisteredSearch("search-id", stay, NOW);
 
-        assertThat(record.searchId()).isEqualTo("search-id");
-        assertThat(record.stay()).isEqualTo(stay);
-        assertThat(record.registeredAt()).isEqualTo(now);
+        assertAll(
+                () -> assertThat(search.searchId()).isEqualTo("search-id"),
+                () -> assertThat(search.stay()).isEqualTo(stay),
+                () -> assertThat(search.registeredAt()).isEqualTo(NOW));
     }
 
     @Test
     void shouldRejectNullSearchId() {
-        assertThatThrownBy(() -> new RegisteredSearch(null, stay, Instant.now()))
+        assertThatThrownBy(() -> new RegisteredSearch(null, stay, NOW))
                 .isInstanceOf(NullPointerException.class);
     }
 
     @Test
     void shouldRejectBlankSearchId() {
-        assertThatThrownBy(() -> new RegisteredSearch(" ", stay, Instant.now()))
+        assertThatThrownBy(() -> new RegisteredSearch(" ", stay, NOW))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     void shouldRejectNullStay() {
-        assertThatThrownBy(() -> new RegisteredSearch("search-id", null, Instant.now()))
+        assertThatThrownBy(() -> new RegisteredSearch("search-id", null, NOW))
                 .isInstanceOf(NullPointerException.class);
     }
 

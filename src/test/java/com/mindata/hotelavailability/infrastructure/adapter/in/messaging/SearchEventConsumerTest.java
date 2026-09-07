@@ -1,7 +1,7 @@
 package com.mindata.hotelavailability.infrastructure.adapter.in.messaging;
 
-import com.mindata.hotelavailability.domain.model.RegisteredSearch;
 import com.mindata.hotelavailability.application.port.in.PersistSearchUseCase;
+import com.mindata.hotelavailability.domain.model.RegisteredSearch;
 import com.mindata.hotelavailability.infrastructure.adapter.out.messaging.SearchEventMessage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,6 +14,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -34,8 +35,10 @@ class SearchEventConsumerTest {
 
         ArgumentCaptor<RegisteredSearch> captor = ArgumentCaptor.forClass(RegisteredSearch.class);
         verify(persistSearchUseCase).persist(captor.capture());
-        assertThat(captor.getValue().searchId()).isEqualTo("search-id");
-        assertThat(captor.getValue().stay().hotelId()).isEqualTo("1234aBc");
-        assertThat(captor.getValue().stay().ages()).containsExactly(30, 29, 1, 3);
+        RegisteredSearch persisted = captor.getValue();
+        assertAll(
+                () -> assertThat(persisted.searchId()).isEqualTo("search-id"),
+                () -> assertThat(persisted.stay().hotelId()).isEqualTo("1234aBc"),
+                () -> assertThat(persisted.stay().ages()).containsExactly(30, 29, 1, 3));
     }
 }

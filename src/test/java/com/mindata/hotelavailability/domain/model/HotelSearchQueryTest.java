@@ -9,20 +9,23 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 class HotelSearchQueryTest {
 
     private static final LocalDate CHECK_IN = LocalDate.of(2023, 12, 29);
     private static final LocalDate CHECK_OUT = LocalDate.of(2023, 12, 31);
+    private static final List<Integer> AGES = List.of(30);
 
     @Test
     void shouldExposeTheGivenValues() {
         HotelSearchQuery stay = new HotelSearchQuery("1234aBc", CHECK_IN, CHECK_OUT, List.of(30, 29, 1, 3));
 
-        assertThat(stay.hotelId()).isEqualTo("1234aBc");
-        assertThat(stay.checkIn()).isEqualTo(CHECK_IN);
-        assertThat(stay.checkOut()).isEqualTo(CHECK_OUT);
-        assertThat(stay.ages()).containsExactly(30, 29, 1, 3);
+        assertAll(
+                () -> assertThat(stay.hotelId()).isEqualTo("1234aBc"),
+                () -> assertThat(stay.checkIn()).isEqualTo(CHECK_IN),
+                () -> assertThat(stay.checkOut()).isEqualTo(CHECK_OUT),
+                () -> assertThat(stay.ages()).containsExactly(30, 29, 1, 3));
     }
 
     @Test
@@ -38,8 +41,9 @@ class HotelSearchQueryTest {
     @Test
     void shouldRejectMutationOfTheReturnedAgesList() {
         HotelSearchQuery stay = new HotelSearchQuery("1234aBc", CHECK_IN, CHECK_OUT, List.of(30, 29));
+        List<Integer> ages = stay.ages();
 
-        assertThatThrownBy(() -> stay.ages().add(1))
+        assertThatThrownBy(() -> ages.add(1))
                 .isInstanceOf(UnsupportedOperationException.class);
     }
 
@@ -53,25 +57,25 @@ class HotelSearchQueryTest {
 
     @Test
     void shouldRejectNullHotelId() {
-        assertThatThrownBy(() -> new HotelSearchQuery(null, CHECK_IN, CHECK_OUT, List.of(30)))
+        assertThatThrownBy(() -> new HotelSearchQuery(null, CHECK_IN, CHECK_OUT, AGES))
                 .isInstanceOf(NullPointerException.class);
     }
 
     @Test
     void shouldRejectBlankHotelId() {
-        assertThatThrownBy(() -> new HotelSearchQuery("   ", CHECK_IN, CHECK_OUT, List.of(30)))
+        assertThatThrownBy(() -> new HotelSearchQuery("   ", CHECK_IN, CHECK_OUT, AGES))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     void shouldRejectNullCheckIn() {
-        assertThatThrownBy(() -> new HotelSearchQuery("1234aBc", null, CHECK_OUT, List.of(30)))
+        assertThatThrownBy(() -> new HotelSearchQuery("1234aBc", null, CHECK_OUT, AGES))
                 .isInstanceOf(NullPointerException.class);
     }
 
     @Test
     void shouldRejectNullCheckOut() {
-        assertThatThrownBy(() -> new HotelSearchQuery("1234aBc", CHECK_IN, null, List.of(30)))
+        assertThatThrownBy(() -> new HotelSearchQuery("1234aBc", CHECK_IN, null, AGES))
                 .isInstanceOf(NullPointerException.class);
     }
 
@@ -83,14 +87,14 @@ class HotelSearchQueryTest {
 
     @Test
     void shouldRejectCheckInEqualToCheckOut() {
-        assertThatThrownBy(() -> new HotelSearchQuery("1234aBc", CHECK_IN, CHECK_IN, List.of(30)))
+        assertThatThrownBy(() -> new HotelSearchQuery("1234aBc", CHECK_IN, CHECK_IN, AGES))
                 .isInstanceOf(InvalidDateRangeException.class)
                 .hasMessageContaining("must be strictly before");
     }
 
     @Test
     void shouldRejectCheckInAfterCheckOut() {
-        assertThatThrownBy(() -> new HotelSearchQuery("1234aBc", CHECK_OUT, CHECK_IN, List.of(30)))
+        assertThatThrownBy(() -> new HotelSearchQuery("1234aBc", CHECK_OUT, CHECK_IN, AGES))
                 .isInstanceOf(InvalidDateRangeException.class);
     }
 }

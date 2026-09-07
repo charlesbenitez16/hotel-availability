@@ -18,6 +18,7 @@ import java.time.ZoneOffset;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -50,13 +51,14 @@ class SearchRegistrationServiceTest {
 
         RegisteredSearch result = service.registerSearch(stay);
 
-        assertThat(result.searchId()).isEqualTo("generated-id");
-        assertThat(result.stay()).isEqualTo(stay);
-        assertThat(result.registeredAt()).isEqualTo(FIXED_INSTANT);
-
         ArgumentCaptor<RegisteredSearch> captor = ArgumentCaptor.forClass(RegisteredSearch.class);
         verify(searchEventPublisher).publish(captor.capture());
-        assertThat(captor.getValue()).isEqualTo(result);
+
+        assertAll(
+                () -> assertThat(result.searchId()).isEqualTo("generated-id"),
+                () -> assertThat(result.stay()).isEqualTo(stay),
+                () -> assertThat(result.registeredAt()).isEqualTo(FIXED_INSTANT),
+                () -> assertThat(captor.getValue()).isEqualTo(result));
     }
 
     @Test

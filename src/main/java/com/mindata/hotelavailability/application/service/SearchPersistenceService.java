@@ -3,7 +3,7 @@ package com.mindata.hotelavailability.application.service;
 import com.mindata.hotelavailability.domain.exception.SearchPersistenceException;
 import com.mindata.hotelavailability.domain.model.HotelSearchQuery;
 import com.mindata.hotelavailability.domain.model.RegisteredSearch;
-import com.mindata.hotelavailability.domain.port.in.PersistSearchUseCase;
+import com.mindata.hotelavailability.application.port.in.PersistSearchUseCase;
 import com.mindata.hotelavailability.domain.port.out.SearchRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,7 +1,7 @@
 package com.mindata.hotelavailability.infrastructure.adapter.in.messaging;
 
 import com.mindata.hotelavailability.domain.model.RegisteredSearch;
-import com.mindata.hotelavailability.domain.port.in.PersistSearchUseCase;
+import com.mindata.hotelavailability.application.port.in.PersistSearchUseCase;
 import com.mindata.hotelavailability.infrastructure.adapter.out.messaging.SearchEventMessage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

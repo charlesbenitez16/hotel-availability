@@ -3,7 +3,7 @@ package com.mindata.hotelavailability.application.service;
 import com.mindata.hotelavailability.domain.exception.SearchNotFoundException;
 import com.mindata.hotelavailability.domain.model.RegisteredSearch;
 import com.mindata.hotelavailability.domain.model.SearchCount;
-import com.mindata.hotelavailability.domain.port.in.CountSearchUseCase;
+import com.mindata.hotelavailability.application.port.in.CountSearchUseCase;
 import com.mindata.hotelavailability.domain.port.out.SearchRepository;
 import org.springframework.stereotype.Service;
 

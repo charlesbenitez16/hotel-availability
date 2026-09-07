@@ -1,6 +1,6 @@
 package com.mindata.hotelavailability.infrastructure.adapter.in.messaging;
 
-import com.mindata.hotelavailability.domain.port.in.PersistSearchUseCase;
+import com.mindata.hotelavailability.application.port.in.PersistSearchUseCase;
 import com.mindata.hotelavailability.infrastructure.adapter.out.messaging.SearchEventMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

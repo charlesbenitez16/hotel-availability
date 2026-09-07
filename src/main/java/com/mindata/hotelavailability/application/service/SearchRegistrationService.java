@@ -2,7 +2,7 @@ package com.mindata.hotelavailability.application.service;
 
 import com.mindata.hotelavailability.domain.model.HotelSearchQuery;
 import com.mindata.hotelavailability.domain.model.RegisteredSearch;
-import com.mindata.hotelavailability.domain.port.in.RegisterSearchUseCase;
+import com.mindata.hotelavailability.application.port.in.RegisterSearchUseCase;
 import com.mindata.hotelavailability.domain.port.out.SearchEventPublisher;
 import com.mindata.hotelavailability.domain.port.out.SearchIdGenerator;
 import org.slf4j.Logger;

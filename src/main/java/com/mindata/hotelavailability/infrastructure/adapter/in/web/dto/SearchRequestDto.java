@@ -3,6 +3,7 @@ package com.mindata.hotelavailability.infrastructure.adapter.in.web.dto;
 import com.mindata.hotelavailability.infrastructure.adapter.in.web.validation.ValidDateRange;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -19,12 +20,13 @@ public record SearchRequestDto(
         @NotBlank(message = "hotelId must not be blank")
         String hotelId,
 
-        @Schema(example = "29/12/2023", type = "string", pattern = "dd/MM/yyyy")
+        @Schema(example = "29/12/2026", type = "string", pattern = "dd/MM/yyyy")
         @NotNull(message = "checkIn is required")
+        @FutureOrPresent(message = "checkIn must not be in the past")
         @JsonFormat(pattern = "dd/MM/yyyy")
         LocalDate checkIn,
 
-        @Schema(example = "31/12/2023", type = "string", pattern = "dd/MM/yyyy")
+        @Schema(example = "31/12/2026", type = "string", pattern = "dd/MM/yyyy")
         @NotNull(message = "checkOut is required")
         @JsonFormat(pattern = "dd/MM/yyyy")
         LocalDate checkOut,

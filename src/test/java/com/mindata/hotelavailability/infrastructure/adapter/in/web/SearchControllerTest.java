@@ -54,7 +54,7 @@ class SearchControllerTest {
     @BeforeEach
     void setUp() {
         stay = new HotelSearchQuery(
-                "1234aBc", LocalDate.of(2023, 12, 29), LocalDate.of(2023, 12, 31), List.of(30, 29, 1, 3));
+                "1234aBc", LocalDate.of(2026, 12, 29), LocalDate.of(2026, 12, 31), List.of(30, 29, 1, 3));
         search = new RegisteredSearch("search-id", stay, Instant.parse("2023-12-01T10:15:30Z"));
     }
 
@@ -75,8 +75,8 @@ class SearchControllerTest {
     void searchShouldReturn400WhenHotelIdIsBlank() throws Exception {
         Map<String, Object> payload = Map.of(
                 "hotelId", "",
-                "checkIn", "29/12/2023",
-                "checkOut", "31/12/2023",
+                "checkIn", "29/12/2026",
+                "checkOut", "31/12/2026",
                 "ages", List.of(30, 29, 1, 3));
 
         mockMvc.perform(post("/search")
@@ -89,8 +89,22 @@ class SearchControllerTest {
     void searchShouldReturn400WhenCheckInIsAfterCheckOut() throws Exception {
         Map<String, Object> payload = Map.of(
                 "hotelId", "1234aBc",
-                "checkIn", "31/12/2023",
-                "checkOut", "29/12/2023",
+                "checkIn", "31/12/2026",
+                "checkOut", "29/12/2026",
+                "ages", List.of(30));
+
+        mockMvc.perform(post("/search")
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(payload)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void searchShouldReturn400WhenCheckInIsInThePast() throws Exception {
+        Map<String, Object> payload = Map.of(
+                "hotelId", "1234aBc",
+                "checkIn", "29/12/2023",
+                "checkOut", "31/12/2023",
                 "ages", List.of(30));
 
         mockMvc.perform(post("/search")
@@ -167,8 +181,8 @@ class SearchControllerTest {
     private String validRequestJson() throws Exception {
         Map<String, Object> payload = Map.of(
                 "hotelId", "1234aBc",
-                "checkIn", "29/12/2023",
-                "checkOut", "31/12/2023",
+                "checkIn", "29/12/2026",
+                "checkOut", "31/12/2026",
                 "ages", List.of(30, 29, 1, 3));
         return objectMapper.writeValueAsString(payload);
     }
